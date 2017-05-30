@@ -7,21 +7,21 @@ Im my PID controller implementation, PID PID values were determined using initia
 
 ## Initial Values
 
-### P term coefficient Kp
+### Proportional term coefficient Kp
 
-The proportional term produces an output value that is proportional to the current CTE(cross track error) value. So Kp value determine how responsive the contorller is to current CTE. If Kp value is too high, steering value will be too large. The car may drive in zig-zag way. However, if Kp is too small, the car may drive out of track before it can correct CTE.  I started Kp at relatively big number like 2, I could see the car swinged and quickly off the track. Then I tried a relatively small number like 0.05, the car drove slow to one side of the roadd and got off the quick eventually. The I tried the valued in the middle, if the car still swing, I get middle value of current value and the lower bound value. If car drove slowly to one side of track, get the middle value of current and the upper bound like the binary search algorithm until I got a good value.
+The proportional term produces an output value that is proportional to the current CTE(cross track error) value. So Kp value determine how responsive the contorller is to current CTE. If Kp value is too high, steering value will be too large. The car may drive in zig-zag way. However, if Kp is too small, the car may drive out of track before it can correct CTE.  I started Kp at relatively big number like 2, I could see the car swinged and quickly off the track. Then I tried a relatively small number like 0.05, the car drove slow to one side of the roadd and got off the quick eventually. The I tried the valued in the middle, if the car still swing, I get middle value of current value and the lower bound value. If car drove slowly to one side of track, get the middle value of current and the upper bound like the binary search algorithm until I got a good value: 0.15.
 
-### I term coefficient Ki
+### Integral term coefficient Ki
 
-Integral term is proportional to both the magnitude of CTE and the duration of CTE. The integral in a PID controller is the sum of CTE over time and gives the accumulated offset that should have been corrected previously. The I-Value gives the conversion from all accumulated CTE errors to the action (steering angle). As the integral CTE error is simply the sum of all the previous values which are handed approx. every 0.1s, the I-value is expected to be ten times smaller than the P-value, with an order of magnitude of 0.01. This change of the order of magnitude accounts for the normalising time to unit length, as the for the correct integration each summand has to be multiplied with length of the integration time, which is times 0.1.
+Integral term is proportional to both the magnitude of CTE and the duration of CTE. The integral in a PID controller is the sum of CTE over time and gives the accumulated offset that should have been corrected previously. In theory, The integral term accelerates the movement of the process towards setpoint and eliminates the residual steady-state error that occurs with a pure proportional controller. However, since the integral term responds to accumulated errors from the past, it can cause the present value to overshoot the setpoint value. Ki should be much smaller than Ki, so I set Ki as 0.01 of Kp and manually tuned it to 0.003
 
-D-Value
+### Derivative term coefficent Kd
 
-The D-Value gives the conversion from the derivative CTE errors to the action (steering angle). As the derivataive CTE error is approximated by the difference between the last two values which are handed with a difference of approx. 0.1s, the D-value is expected to be ten times bigger than the P-value, with an order of magnitude of 1. This change of the order of magnitude accounts for the normalising time to unit length, as the for the correct derivative the difference has be divided by the length of the integration time, which is times 10.
-Final Values
+The derivative term proportional to the slope(derivataive) of CTE over time. Derivative term predicts system behavior and thus improves settling time and stability of controller. In this project, the derivataive CTE error is approximated by the difference between the last two values which are handed with a difference of approx. 0.1s, Kd is expected to be ten times bigger than the Kp, with an order of magnitude of 1. So I set Kd = 10 * Kp intially and tuned to 2.
 
-After running the twiddle algorithm the following final values were determined:
+## Twinddle
 
-    The final P-Value is 0.071769, which is close to the expected order of magnitude of 0.1.
-    The final I-Value is 0.00411344, which is a bit smaller than a tenth of the P-value, but within the expected range.
-    The final D-Value is 0.974954, which is close to ten times the P-value and as well in the expected range.
+After running the twiddle algorithm the following final values were determined: I finally use Kp = 0.2, Ki = 0.04, Kd = 2.5
+
+
+    T
