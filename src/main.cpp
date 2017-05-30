@@ -75,6 +75,8 @@ int main()
          << " i_error: " << pid.i_error <<  " d_error: " << pid.d_error<<  std::endl;
           pid.UpdateError(cte);
           steer_value = pid.Output();
+          if(steer_value > 1.0) steer_value = 1.0;
+          if (steer_value < -1.0)  steer_value = -1.0;
           pid.Twiddle();
 
           
